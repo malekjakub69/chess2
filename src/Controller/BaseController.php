@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\NewUserForm;
+use App\Form\EditUserForm;
 
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,31 +38,46 @@ class BaseController extends AbstractController
 
         $users = $doctrine->getRepository(User::class)->findAll();
 
-
-        return $this->render('base.html.twig', [
+        return $this->render('table.html.twig', [
             'form' => $form->createView(),
             'users' => $users,
         ]);
     }
 
-    #[Route('/update/{id}/{field}/{value}', name: 'update')]
-    public function update($id, $field, $value, ManagerRegistry $doctrine): Response
+    #[Route('/user/{id}', name: 'user')]
+    public function user($id, ManagerRegistry $doctrine): Response
     {
-        $em = $doctrine->getManager();
-        $user = $em->getRepository(User::class)->find($id);
-    
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$id
-            );
-        }
-    
-        $setter = 'set'.ucfirst($field);
-        if (method_exists($user, $setter)) {
-            $user->$setter($value);
+        $user = $doctrine->getRepository(User::class)->find($id);
+
+
+        return $this->render('user.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
+    #[Route('/user/{id}/edit', name: 'user_edit')]
+    public function user_edit($id,Request $request, ManagerRegistry $doctrine): Response
+    {
+        $user = $doctrine->getRepository(User::class)->find($id);
+
+        $form = $this->createForm(EditUserForm::class, $user); // Create the form
+
+        $form->handleRequest($request); // Handle the request
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+
+            $em = $doctrine->getManager();
+            $em->persist($user);
             $em->flush();
+            // Perform some action, such as saving the task to the database
+
+            return $this->redirectToRoute("user",['id' =>$user->getId()]); // Redirect on success
         }
-    
-        return $this->redirectToRoute('base');
+
+        return $this->render('user_edit.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
     }
 }

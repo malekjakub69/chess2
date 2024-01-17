@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+
+		{% block javascripts %}
+			{% block importmap %}
+				{{ importmap('app') }}
+			{% endblock %}
+		{% endblock %}
+
+		<style>
+			#edit_user_form {
+				display: grid;
+				grid-gap: 10px;
+			}
+
+			#edit_user_form label {
+				display: block;
+			}
+
+			#edit_user_form input {
+				width: 100%;
+			}
+
+			button {
+				width: 100%;
+				height: 40px;
+				border-radius: 12px
+			}
+		</style>
+
+	</head>
+	<body>
+
+		<div>
+			{{ form(form) }}
+			</div>
+			<div>
+				<button onclick="location.href = '/user/{{user.id}}';">Zpět</button>
+			</div>
+		</body>
+	</body>
+</html>

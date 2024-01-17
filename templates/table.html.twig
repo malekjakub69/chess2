@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+
+		{% block javascripts %}
+			{% block importmap %}
+				{{ importmap('app') }}
+			{% endblock %}
+		{% endblock %}
+
+		<style>
+			.myTabel {
+				font-family: Arial, Helvetica, sans-serif;
+				border-collapse: collapse;
+				width: 100%;
+			}
+
+			.myTabel td,
+			.myTabel th {
+				border: 1px solid #ddd;
+				padding: 8px;
+			}
+
+			.myTabel tr:nth-child(even) {
+				background-color: #f2f2f2;
+			}
+
+			.myTabel tr:hover {
+				background-color: #ddd;
+			}
+
+			.myTabel th {
+				padding-top: 12px;
+				padding-bottom: 12px;
+				text-align: center;
+				background-color: #4CAF50;
+				color: white;
+			}
+
+			.myTabel td {
+				text-align: center;
+			}
+
+			.myTabel td button.updateValue {
+				width: 20px;
+				height: 20px;
+				border-radius: 50%;
+				border: 1px solid #ddd;
+				background-color: #f2f2f2;
+				font-weight: bold;
+				margin: 0 5px;
+			}
+
+			.myTabel th.clickable {
+				cursor: pointer;
+			}
+
+
+			#new_user_form {
+				display: grid;
+				grid-gap: 10px;
+			}
+
+			#new_user_form label {
+				display: block;
+			}
+
+			#new_user_form input {
+				width: 100%;
+				font-size: 18px;
+			}
+
+			button {
+				width: 100%;
+				height: 40px;
+				border-radius: 12px
+			}
+		</style>
+
+		 <script>
+				function updateByRow(columnIndex, order = 'desc') {
+					let table = document.querySelector('.myTabel');
+					let rows = Array.from(table.rows).slice(1); // Ignorujeme hlavičku tabulky
+				
+					rows.sort((rowA, rowB) => {
+						let cellA = rowA.cells[columnIndex].textContent;
+						let cellB = rowB.cells[columnIndex].textContent;
+				
+						// Předpokládáme, že data jsou čísla. Pokud ne, můžete použít 'localeCompare' pro řetězce.
+						return order == "desc" ? cellB - cellA : cellA - cellB;
+					});
+				
+					rows.forEach(row => table.tBodies[0].appendChild(row));
+				}
+				
+						</script>
+	</head>
+	<body>
+		<table class="myTabel">
+			<thead class="sortable">
+				<tr>
+					<th>Name</th>
+					<th class="clickable" onclick="updateByRow(1)" colspan="2">Výhry (B:Č)</th>
+					<th class="clickable" onclick="updateByRow(3)" colspan="2">Prohry (B:Č)</th>
+					<th class="clickable" onclick="updateByRow(5, 'asc')">Nejlepší hra</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+					<tr>
+						<td>
+							<a href="/user/{{user.id}}">{{ user.name }}</a>
+						</td>
+						<td>
+							{{ user.getWhiteWin() + user.getBlackWin() }}
+						</td>
+						<td>
+							({{user.getWhiteWin}}:{{user.getBlackWin}})
+						</td>
+						<td>
+							{{ user.getWhiteLose() + user.getBlackLose() }}
+						</td>
+						<td>
+							({{user.getWhiteLose}}:{{user.getBlackLose}})
+						</td>
+						<td>
+							{{user.getBestGame()}}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<br/>
+		{{ form(form) }}
+		</body>
+	</body>
+</html>
