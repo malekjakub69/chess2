@@ -42,6 +42,7 @@ Chess2 is a Symfony-based web application that allows users to play chess online
 ## Features
 
 - View other user score.
-- Change the win and the lose game.
-- Change the best game in the number of moves.
-- Add new users.
+- Sort by Win, Lose or Best Game
+- Add new users
+- View user detail 
+- Edit users data
